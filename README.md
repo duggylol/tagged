@@ -110,15 +110,23 @@ supabase/migrations/    Schema + row-level security
 
 ## The AI pipeline
 
-Five stages, two model calls, roughly **$0.001 per item** — about a dollar per thousand listings.
+Five stages, two model calls, roughly **$0.0033 per item** — about $3.30 per thousand listings.
 
 | Stage | What happens | Cost |
 |---|---|---|
 | 0 | Downscale, WebP, perceptual hash — **in the browser** | $0 |
-| 1 | One vision call into a strict JSON schema | ~$0.0005 |
+| 1 | One vision call into a strict JSON schema | ~$0.0017 |
 | 2 | Vector search over our own comps + eBay Browse | $0 |
 | 3 | Median, IQR, days-to-sale — statistics, not inference | $0 |
-| 4 | One copy call, then deterministic per-platform adaptation | ~$0.0005 |
+| 4 | One copy call, then deterministic per-platform adaptation | ~$0.0016 |
+
+> **Correction on the original estimate.** The plan quoted ~$0.001/item on
+> `gemini-2.5-flash-lite` ($0.10/$0.40 per 1M). Google has since closed that
+> model to new API keys — a fresh key gets a 404 pointing at the 3.x line. The
+> cheapest model a new key can reach is `gemini-3.1-flash-lite` at
+> $0.25/$1.50, which is where the $0.0033 comes from. Still cheap enough that
+> a $14.99 subscriber listing 300 items costs about a dollar a month in AI,
+> but it is three times the original figure and the plan overstated it.
 
 Two things drive most of that efficiency. **The care tag photo is the highest-signal frame in the app** — a style number turns a guess into an exact lookup — so `selectPhotosForAnalysis` always sends it first. And **per-platform adaptation happens in code**, not in five more model calls, which cuts cost roughly fivefold and makes title truncation a testable bug rather than a bad sample.
 

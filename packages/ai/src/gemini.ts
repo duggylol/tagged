@@ -54,8 +54,8 @@ export class GeminiProvider implements LLMProvider {
       throw new AIProviderError('GEMINI_API_KEY is not set.', 'gemini');
     }
     this.apiKey = options.apiKey;
-    this.visionModel = options.visionModel ?? 'gemini-2.5-flash-lite';
-    this.copyModel = options.copyModel ?? 'gemini-2.5-flash-lite';
+    this.visionModel = options.visionModel ?? 'gemini-3.1-flash-lite';
+    this.copyModel = options.copyModel ?? 'gemini-3.1-flash-lite';
     this.fetchImpl = options.fetchImpl ?? fetch;
   }
 

@@ -103,6 +103,12 @@ export interface ModelRate {
  * Prices in USD per million tokens, checked 2026-08-26. These move — the
  * budget guard degrades gracefully if a model is missing, but re-check them
  * when you change models.
+ *
+ * NOTE: `gemini-2.5-flash-lite` is the cheapest entry here but Google has
+ * closed it to new API keys — a fresh key gets a 404 telling you to move to a
+ * 3.x model. It stays in the table so existing keys still cost correctly, but
+ * the default is `gemini-3.1-flash-lite`, the cheapest model a new key can
+ * actually reach.
  */
 export const MODEL_RATES: Record<string, ModelRate> = {
   // Google
