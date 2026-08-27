@@ -213,9 +213,22 @@ export function ItemWorkbench({ item, listings, photoUrls, connectedPlatforms, p
           ) : null}
 
           {/* Analysis state */}
+          {/* A stalled analysis used to be a dead end — a spinner with no way
+              out. There is always a retry here now, whatever the stage. */}
           {analysing ? (
-            <Notice tone="info" title="Analysing">
-              Reading the photos and checking comps. This page updates when it finishes.
+            <Notice tone="info" title={item.analysisStatus === 'pending' ? 'Queued' : 'Analysing'}>
+              <p className="mb-3">
+                {item.analysisStatus === 'pending'
+                  ? 'Waiting to start. If it sits here for more than a minute, kick it off manually.'
+                  : 'Reading the photos and checking comps. This page updates when it finishes.'}
+              </p>
+              <Button
+                variant="secondary"
+                onClick={() => call(`/api/items/${item.id}/analyze`, {}, 'analyze')}
+                disabled={busy !== null}
+              >
+                {busy === 'analyze' ? 'Running…' : 'Run analysis now'}
+              </Button>
             </Notice>
           ) : null}
 

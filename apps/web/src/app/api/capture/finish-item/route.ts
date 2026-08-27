@@ -1,3 +1,5 @@
+import { after } from 'next/server';
+
 import { handleError, fail, ok, readJson } from '@/lib/api-response';
 import { runPipeline } from '@/lib/pipeline';
 import { getAdminSupabase, getServerSupabase, requireUser } from '@/lib/supabase/server';
@@ -84,11 +86,24 @@ export async function POST(request: Request) {
       payload: { photoCount: paths.length, source: 'phone_capture' },
     });
 
-    // Fire and forget. The phone must not wait ~8 seconds for two model calls
-    // before it can photograph the next garment.
+    // The phone must not wait ~8 seconds for two model calls before it can
+    // photograph the next garment — but a bare `void promise` does NOT work on
+    // serverless. The moment the response is sent the execution context is
+    // frozen and any un-awaited promise is discarded, so the pipeline never
+    // ran and items sat on `pending` forever.
+    //
+    // `after()` is the framework-native fix: the response goes out immediately,
+    // and the platform keeps the function alive until this settles. Works on
+    // Vercel and on a self-hosted Node server alike.
     const admin = getAdminSupabase();
-    void runPipeline(supabase, admin, user.id, item.id).catch((error) => {
-      console.error('[tagged] background analysis failed', error);
+    after(async () => {
+      try {
+        await runPipeline(supabase, admin, user.id, item.id);
+      } catch (error) {
+        console.error('[tagged] background analysis failed', error);
+        // runPipeline already writes analysis_status='failed' with the message,
+        // so the seller sees a real error rather than a spinner that never ends.
+      }
     });
 
     return ok({ item, duplicate }, 201);
