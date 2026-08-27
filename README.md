@@ -218,35 +218,27 @@ Costs when you get there: $25 one-time for Google Play, $99/year for Apple. Neit
 
 ## Deploying
 
-A Supabase project is already provisioned for this app and both migrations are applied:
+**Live:** https://tagged-duggys-projects-1ba70669.vercel.app
+**Repo:** https://github.com/duggylol/tagged (auto-deploys on push to `main`)
 
-- **Project ref:** `ilbanwcmekfaplmffphe` (org: duggy's, free tier, us-east-1)
-- **URL:** `https://ilbanwcmekfaplmffphe.supabase.co`
-- **Dashboard:** https://supabase.com/dashboard/project/ilbanwcmekfaplmffphe
-
-To deploy to Vercel, run this once from the repo root:
-
-```
-powershell -ExecutionPolicy Bypass -File scripts\deploy.ps1
-```
-
-It signs you in (one browser click), links the project, sets every production
-environment variable, deploys, then points `NEXT_PUBLIC_APP_URL` at the live
-origin and redeploys. It prompts for exactly two secrets — the Supabase
-service-role key and a Gemini API key — which are typed into the Vercel CLI on
-your machine and never written to disk.
+Supabase project `ilbanwcmekfaplmffphe` (free tier, us-east-1) backs it, with
+all three migrations applied:
+https://supabase.com/dashboard/project/ilbanwcmekfaplmffphe
 
 `vercel.json` pins the monorepo build (`npm run build --workspace=@tagged/web`,
-output `apps/web/.next`) and registers the sale-detection cron at five-minute
-intervals. Vercel injects `Authorization: Bearer $CRON_SECRET` on cron requests
-automatically, which is exactly what `/api/cron/detect-sales` checks for.
+output `apps/web/.next`) and registers the sale-detection cron every five
+minutes. Vercel injects `Authorization: Bearer $CRON_SECRET` on cron requests
+automatically, which is what `/api/cron/detect-sales` checks.
 
-After the first deploy, set the Site URL in Supabase so email confirmation
-links come back to the right origin:
-https://supabase.com/dashboard/project/ilbanwcmekfaplmffphe/auth/url-configuration
+Production environment variables are set in the Vercel dashboard. Note that
+`NEXT_PUBLIC_*` values are inlined at build time, so changing one requires a
+redeploy, not just a save.
+
+`scripts/deploy.ps1` sets all of them via the CLI if you would rather not use
+the dashboard.
 
 Once you add eBay or Etsy credentials, update the redirect URIs in their
-developer consoles to match the deployed origin.
+developer consoles to point at the deployed origin.
 
 ## Commands
 
