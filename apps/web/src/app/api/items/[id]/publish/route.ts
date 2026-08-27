@@ -5,7 +5,8 @@ import { publishItem } from '@/lib/orchestrator';
 import { getServerSupabase, requireUser } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+// Publishing uploads images to each marketplace in turn.
+export const maxDuration = 300;
 
 interface Body {
   platforms: string[];

@@ -22,6 +22,13 @@ export interface ProcessedImage {
   phash: string;
   /** Bytes saved, for the "we compressed this" affordance in the UI. */
   originalBytes: number;
+  /**
+   * What the encoder ACTUALLY produced — never assume it matches what was
+   * requested. See `encodeCompressed`.
+   */
+  mimeType: string;
+  /** File extension matching `mimeType`, for the storage path. */
+  extension: string;
 }
 
 /** Marketplaces top out well below this; anything larger is wasted bytes. */
@@ -50,18 +57,51 @@ function makeCanvas(width: number, height: number): OffscreenCanvas | HTMLCanvas
 
 async function canvasToBlob(
   canvas: OffscreenCanvas | HTMLCanvasElement,
+  type: string,
   quality: number,
 ): Promise<Blob> {
   if ('convertToBlob' in canvas) {
-    return canvas.convertToBlob({ type: 'image/webp', quality });
+    return canvas.convertToBlob({ type, quality });
   }
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Could not encode image'))),
-      'image/webp',
+      type,
       quality,
     );
   });
+}
+
+/**
+ * Encode, and verify what actually came out.
+ *
+ * Neither `toBlob` nor `convertToBlob` throws when it cannot encode the type
+ * you asked for — per spec they silently fall back to PNG. That failure is
+ * invisible and expensive: a 900x1600 PNG runs ~2.2MB where the WebP would be
+ * ~150KB, which is a 15x bigger upload over thrift-store signal and a vision
+ * call that takes half a minute instead of a few seconds.
+ *
+ * So: ask for WebP, check what came back, and fall back to JPEG — which every
+ * canvas implementation can encode — rather than shipping PNG by accident.
+ */
+async function encodeCompressed(
+  canvas: OffscreenCanvas | HTMLCanvasElement,
+  quality: number,
+): Promise<{ blob: Blob; mimeType: string; extension: string }> {
+  const webp = await canvasToBlob(canvas, 'image/webp', quality);
+  if (webp.type === 'image/webp') {
+    return { blob: webp, mimeType: 'image/webp', extension: 'webp' };
+  }
+
+  const jpeg = await canvasToBlob(canvas, 'image/jpeg', quality);
+  if (jpeg.type === 'image/jpeg') {
+    return { blob: jpeg, mimeType: 'image/jpeg', extension: 'jpg' };
+  }
+
+  // Both fell back. Take the smaller of what we have rather than fail the
+  // capture outright — an oversized photo still beats a lost one.
+  const best = jpeg.size < webp.size ? jpeg : webp;
+  return { blob: best, mimeType: best.type || 'image/png', extension: 'png' };
 }
 
 /**
@@ -115,14 +155,22 @@ export async function processImage(file: Blob): Promise<ProcessedImage> {
 
   ctx.drawImage(bitmap, 0, 0, width, height);
 
-  const [blob, phash] = await Promise.all([
-    canvasToBlob(canvas, WEBP_QUALITY),
+  const [encoded, phash] = await Promise.all([
+    encodeCompressed(canvas, WEBP_QUALITY),
     computeDHash(bitmap),
   ]);
 
   bitmap.close?.();
 
-  return { blob, width, height, phash, originalBytes: file.size };
+  return {
+    blob: encoded.blob,
+    width,
+    height,
+    phash,
+    originalBytes: file.size,
+    mimeType: encoded.mimeType,
+    extension: encoded.extension,
+  };
 }
 
 /**

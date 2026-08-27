@@ -3,7 +3,7 @@ import { runPipeline } from '@/lib/pipeline';
 import { getAdminSupabase, getServerSupabase, requireUser } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 /** Run (or re-run) the AI pass on one item. */
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }) {

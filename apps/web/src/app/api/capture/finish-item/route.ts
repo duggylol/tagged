@@ -5,8 +5,10 @@ import { runPipeline } from '@/lib/pipeline';
 import { getAdminSupabase, getServerSupabase, requireUser } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
-// Two model calls plus image downloads. The default edge timeout is too short.
-export const maxDuration = 60;
+// Two model calls plus image downloads. Vercel Pro allows up to 300s; the
+// analysis runs inside after(), so this ceiling covers the background work
+// too, not just the response.
+export const maxDuration = 300;
 
 interface Body {
   sessionId: string;

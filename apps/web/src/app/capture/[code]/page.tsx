@@ -167,11 +167,14 @@ export default function PhoneCapturePage() {
         // finishes on thrift-store signal and one that times out.
         const processed = await processImage(blob);
         const supabase = getSupabaseClient();
-        const path = `${userId}/${sessionId}/${localId}.webp`;
+        // Use the extension and content type the encoder actually produced.
+        // Hardcoding webp here recorded the wrong type for browsers that
+        // silently fall back, and hid a 15x size regression.
+        const path = `${userId}/${sessionId}/${localId}.${processed.extension}`;
 
         const { error: uploadError } = await supabase.storage
           .from('item-photos')
-          .upload(path, processed.blob, { contentType: 'image/webp', upsert: false });
+          .upload(path, processed.blob, { contentType: processed.mimeType, upsert: false });
 
         if (uploadError) throw new Error(uploadError.message);
 
