@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Tagged",
+  "version": "0.1.0",
+  "description": "Lists, delists and watches for sales on the marketplaces that have no public API — using your own logged-in session.",
+  "permissions": ["storage", "alarms", "scripting", "cookies", "tabs"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://poshmark.com/*",
+    "https://*.poshmark.com/*",
+    "https://www.mercari.com/*",
+    "https://www.depop.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "Tagged"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://poshmark.com/*", "https://*.poshmark.com/*"],
+      "js": ["src/adapters/poshmark.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.mercari.com/*"],
+      "js": ["src/adapters/mercari.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.depop.com/*"],
+      "js": ["src/adapters/depop.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

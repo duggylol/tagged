@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tagged">
+  <rect width="512" height="512" rx="112" fill="#10130f"/>
+  <!-- A hang tag: the object this whole product is about. -->
+  <g transform="rotate(-18 256 256)">
+    <path d="M196 128h132a28 28 0 0 1 28 28v132a28 28 0 0 1-8.2 19.8L228.8 425.8a28 28 0 0 1-39.6 0l-103-103a28 28 0 0 1 0-39.6L176.2 136.2A28 28 0 0 1 196 128z"
+          fill="none" stroke="#5fbf97" stroke-width="26" stroke-linejoin="round"/>
+    <circle cx="300" cy="184" r="20" fill="#5fbf97"/>
+  </g>
+</svg>

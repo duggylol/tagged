@@ -1,0 +1,28 @@
+{
+  "name": "tagged",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI-powered cross-listing and inventory suite for resellers",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@tagged/web",
+    "build": "npm run build --workspace=@tagged/web",
+    "start": "npm run start --workspace=@tagged/web",
+    "typecheck": "tsc --noEmit -p packages/core && tsc --noEmit -p packages/ai && tsc --noEmit -p packages/marketplaces && npm run typecheck --workspace=@tagged/web",
+    "lint": "npm run lint --workspace=@tagged/web",
+    "test": "node --import tsx --test packages/core/src/*.test.ts",
+    "db:push": "supabase db push",
+    "db:types": "supabase gen types typescript --linked > packages/core/src/db-types.ts",
+    "cap:sync": "npm run build:static --workspace=@tagged/web && npx cap sync"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.12",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

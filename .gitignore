@@ -1,0 +1,25 @@
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+.env
+.env.local
+.env*.local
+
+.DS_Store
+Thumbs.db
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# Capacitor native projects (generated — commit once you customize them)
+ios/
+android/
+
+# Extension build
+extension/dist/
+extension/*.zip
+tsbuildinfo

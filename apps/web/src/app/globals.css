@@ -1,0 +1,138 @@
+@import 'tailwindcss';
+
+/**
+ * Tagged design tokens.
+ *
+ * Same identity as the build plan: Archivo for display (industrial, reads like
+ * a printed garment label), IBM Plex Sans for body, IBM Plex Mono for data and
+ * eyebrows. The accent is a deep eucalyptus green — it carries "money" and
+ * "go" without being the acid-green every AI-built dashboard reaches for.
+ *
+ * Neutrals carry a faint green bias so they read as chosen rather than
+ * inherited from a framework default.
+ */
+
+@theme {
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --color-paper: #f1f3ee;
+  --color-card: #ffffff;
+  --color-sunk: #e7eae3;
+  --color-ink: #10130f;
+  --color-body: #2e332c;
+  --color-mute: #646b60;
+  --color-hair: #d3d8cd;
+
+  --color-accent: #1e6b52;
+  --color-accent-soft: #ddeae2;
+  --color-amber: #8a6109;
+  --color-amber-soft: #f3e9d2;
+  --color-rust: #9c3a2f;
+  --color-rust-soft: #f2dfdb;
+}
+
+/* Dark theme. Every token is redefined; no component ever hardcodes a colour
+   that only resolves in one theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-paper: #0f120e;
+    --color-card: #171b15;
+    --color-sunk: #1d2219;
+    --color-ink: #edf0e9;
+    --color-body: #c3cabd;
+    --color-mute: #8b9384;
+    --color-hair: #2c3228;
+    --color-accent: #5fbf97;
+    --color-accent-soft: #17301f;
+    --color-amber: #d6a93f;
+    --color-amber-soft: #2e2612;
+    --color-rust: #e08272;
+    --color-rust-soft: #331a16;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-paper: #0f120e;
+  --color-card: #171b15;
+  --color-sunk: #1d2219;
+  --color-ink: #edf0e9;
+  --color-body: #c3cabd;
+  --color-mute: #8b9384;
+  --color-hair: #2c3228;
+  --color-accent: #5fbf97;
+  --color-accent-soft: #17301f;
+  --color-amber: #d6a93f;
+  --color-amber-soft: #2e2612;
+  --color-rust: #e08272;
+  --color-rust-soft: #331a16;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* Safe areas matter the moment this is wrapped in Capacitor. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Digits that line up in columns. Used on every money and count. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+}
+
+/* Visible keyboard focus everywhere, including on the phone capture screen
+   where a bluetooth keyboard or switch control may be in use. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The capture screen on a phone is a camera viewfinder, not a document. */
+.no-bounce {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}

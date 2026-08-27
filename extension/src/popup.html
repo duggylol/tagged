@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tagged</title>
+    <style>
+      :root {
+        --paper: #f1f3ee;
+        --ink: #10130f;
+        --mute: #646b60;
+        --hair: #d3d8cd;
+        --accent: #1e6b52;
+        --rust: #9c3a2f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #0f120e;
+          --ink: #edf0e9;
+          --mute: #8b9384;
+          --hair: #2c3228;
+          --accent: #5fbf97;
+          --rust: #e08272;
+        }
+      }
+      body {
+        width: 260px;
+        margin: 0;
+        padding: 14px;
+        background: var(--paper);
+        color: var(--ink);
+        font: 13px/1.5 'IBM Plex Sans', system-ui, sans-serif;
+      }
+      h1 {
+        margin: 0 0 2px;
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+      .sub { color: var(--mute); font-size: 11px; margin: 0 0 12px; }
+      ul { list-style: none; margin: 0 0 12px; padding: 0; }
+      li {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 0; border-bottom: 1px solid var(--hair);
+      }
+      li:last-child { border-bottom: 0; }
+      .state { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+      .on { color: var(--accent); }
+      .off { color: var(--mute); }
+      button {
+        width: 100%; padding: 8px; border: 0; border-radius: 7px;
+        background: var(--accent); color: var(--paper);
+        font: inherit; font-weight: 500; cursor: pointer;
+      }
+      .meta { margin-top: 10px; color: var(--mute); font-size: 10px; }
+      input {
+        width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 6px 8px;
+        border: 1px solid var(--hair); border-radius: 6px;
+        background: transparent; color: var(--ink); font: 11px 'IBM Plex Mono', monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tagged</h1>
+    <p class="sub">Signed-in marketplaces in this browser</p>
+
+    <ul id="sessions"></ul>
+
+    <input id="apiBase" placeholder="http://localhost:3000" aria-label="Tagged server URL" />
+    <button id="poll">Check for work now</button>
+
+    <p class="meta" id="meta"></p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
